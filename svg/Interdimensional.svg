@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="100%" height="100%" style="fill:#FC7208;"/>
+  <rect x="10%" y="85%" width="80%" height="10%" style="fill:#7701AD;"/>
+  <text style="fill: #FC7208; font-family: &quot;Arial Black&quot;; font-size: 3em; white-space: pre;" x="15%" y="92%">Cloudy Dreamscape</text>
+  <metadata>
+    <performerType>pad</performerType>
+    <performerInstrument>clouds</performerInstrument>    
+    <performerData>7|16</performerData>
+  </metadata>
+</svg>
