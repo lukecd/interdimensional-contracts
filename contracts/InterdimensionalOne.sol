@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/utils/Base64.sol";
 import "hardhat/console.sol";
 
 
-// contract deployed to 0x5FbDB2315678afecb367f032d93F642f64180aa3
+// contract deployed to 0x2C0fDa00F19D0c238AAB2f90107b05B5d6653eA1
 contract InterdimensionalOne is ERC721URIStorage {
     address payable owner;
 
@@ -20,7 +20,7 @@ contract InterdimensionalOne is ERC721URIStorage {
     Counters.Counter private _prototypeIds;    
     Counters.Counter private _tokenIds;
     Counters.Counter private _itemsSold;
-    uint256 listPrice = 0.042 ether;
+    uint256 listPrice = 0.024 ether;
 
     Collection[] private collections;
 
@@ -50,7 +50,7 @@ contract InterdimensionalOne is ERC721URIStorage {
         string part; //drone, pad, rhythm
         string instrument;
         string soundFiles; // from json TODO is storing this way expensive?
-        address payable owner;
+        address payable creator;
     }
 
     struct NFT {
@@ -63,7 +63,7 @@ contract InterdimensionalOne is ERC721URIStorage {
     }
 
     /**
-     8 @notice Allows for updating the refernced sound files.
+     * @notice Allows for updating the refernced sound files.
      */
     function updateSoundFilesForPrototypeId(uint256 prototypeId, string memory soundFiles) public {
         require(msg.sender == owner, "only owner can update");
@@ -92,7 +92,6 @@ contract InterdimensionalOne is ERC721URIStorage {
     function getMyNFTS() public view returns (NFT[] memory) {
         return ownerToNFTs[msg.sender];
     }
- 
 
     /**
      * @notice Creates a new Collection
@@ -117,7 +116,7 @@ contract InterdimensionalOne is ERC721URIStorage {
      */
     function mintPrototype(uint256 collectionId, uint256 editionSize, string memory name, uint256 price, 
                           string memory color, string memory part, string memory instrument, 
-                          string memory soundFiles, address payable owner) public returns (uint256) {
+                          string memory soundFiles, address payable creator) public returns (uint256) {
         _prototypeIds.increment();
         uint256 newId =  _prototypeIds.current();
         Prototype memory newPrototype = Prototype(newId,
@@ -130,7 +129,7 @@ contract InterdimensionalOne is ERC721URIStorage {
                                                  part,
                                                  instrument,
                                                  soundFiles,
-                                                 owner);
+                                                 creator);
         prototypeIdToPrototype[newId] = newPrototype;
         //todo updates thos
         Prototype[] storage prototypes = collectionIdToPrototypes[collectionId];
@@ -139,16 +138,25 @@ contract InterdimensionalOne is ERC721URIStorage {
         return newId;                                           
     }
 
+    /**
+     * @notice Mints a new NFT given the prototypeId and svgData.
+     * Now there's an obvious problem here that people could write their own
+     * UI and mint an NFT with whatever svgData they make up, but that will be 
+     * handled later, I still want to try re-writing this to use HTML Canvas
+     * instead of SVG. 
+     */
     function mint(uint256 prototypeId, string memory svgData) public payable {
         uint price = prototypeIdToPrototype[prototypeId].price;
-        address owner = prototypeIdToPrototype[prototypeId].owner;
-        require(msg.value == price, "insufficent funds to mint");
+        address creator = prototypeIdToPrototype[prototypeId].creator;
+
+        require(msg.value == price, "insufficient mint fee");
 
         _tokenIds.increment();
         uint256 newNFTId = _tokenIds.current();
         Prototype memory curPrototype = prototypeIdToPrototype[prototypeId];
+        curPrototype.currentlyMinted++;
         uint256 editionId = curPrototype.currentlyMinted;
-        editionId++;
+
         require(editionId <= curPrototype.editionSize, "edition sold out");
 
         NFT memory newNFT = NFT(newNFTId,
@@ -163,8 +171,8 @@ contract InterdimensionalOne is ERC721URIStorage {
         curPrototype.currentlyMinted++;
         _safeMint(msg.sender, newNFTId);
         _setTokenURI(newNFTId, getTokenURI(newNFTId));
-        // transfer mint fee to prototype owner
-        payable(owner).transfer(msg.value);
+        //transfer mint fee to prototype owner
+        payable(creator).transfer(msg.value);    
     }
     
     /**
@@ -192,25 +200,5 @@ contract InterdimensionalOne is ERC721URIStorage {
             )
         );
     }
-
-    // function executeSale(uint256 tokenId) public payable {
-    //     uint price = tokenIdToNFT[tokenId].price;
-    //     require(msg.value == price, "Please submit the exact asking price");
-    //     address seller = tokenIdToNFT[tokenId].seller;
-
-    //     tokenIdToNFT[tokenId].currentlyListed = false;
-    //     tokenIdToNFT[tokenId].seller = payable(msg.sender);
-    //     _itemsSold.increment();
-
-    //     // execute the transfer
-    //     _transfer(address(this), msg.sender, tokenId);
-    //     // now that we don't own the contract anymore,
-    //     // approve this to sell in the future. allows the contract to 
-    //     // execute future transfers
-    //     approve(address(this), tokenId);
-
-    //     payable(owner).transfer(listPrice);
-    //     payable(seller).transfer(msg.value);
-    // }
  
 } 
