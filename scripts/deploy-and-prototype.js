@@ -117,6 +117,65 @@ const mintPadTheOnlyWayOutIsIn = async (owner, nftContract, collectionId) => {
   console.log("Prototype Minted: ", name);    
 }
 
+const mintPadFollowTheBlueMan = async (owner, nftContract, collectionId) => {
+  let soundFiles = {
+      urls: {
+          C3: "pad-follow-the-blue-man-C3.mp3",
+          D3: "pad-follow-the-blue-man-D3.mp3",
+          E3: "pad-follow-the-blue-man-E3.mp3",
+          F3: "pad-follow-the-blue-man-F3.mp3",
+          G3: "pad-follow-the-blue-man-G3.mp3",
+          A3: "pad-follow-the-blue-man-A3.mp3",
+          B3: "pad-follow-the-blue-man-B3.mp3",
+      },
+      baseUrl: "/audio/pads/pad-follow-the-blue-man/",
+      envelope: {
+          attack: 1,
+          release: 4
+      }
+  };
+  soundFiles = JSON.stringify(soundFiles);
+  const editionSize = 42;
+  const name = 'Follow The Blue Man';
+  const price = hre.ethers.utils.parseEther(".024");
+  const color = '#b0e0e6';
+  const type = 'pad';
+  const instrument = 'pad-follow-the-blue-man';
+
+  txId = await nftContract.connect(owner).mintPrototype(collectionId, editionSize, name, price,
+                                                                     color, type, instrument, soundFiles, owner.address); 
+  console.log("Prototype Minted: ", name);    
+}
+const mintPadTheBlissSea = async (owner, nftContract, collectionId) => {
+  let soundFiles = {
+      urls: {
+          C3: "pad-the-bliss-sea-C3.mp3",
+          D3: "pad-the-bliss-sea-D3.mp3",
+          E3: "pad-the-bliss-sea-E3.mp3",
+          F3: "pad-the-bliss-sea-F3.mp3",
+          G3: "pad-the-bliss-sea-G3.mp3",
+          A3: "pad-the-bliss-sea-A3.mp3",
+          B3: "pad-the-bliss-sea-B3.mp3",
+      },
+      baseUrl: "/audio/pads/pad-the-bliss-sea/",
+      envelope: {
+          attack: 1,
+          release: 4
+      }
+  };
+  soundFiles = JSON.stringify(soundFiles);
+  const editionSize = 42;
+  const name = 'The Bliss Sea';
+  const price = hre.ethers.utils.parseEther(".024");
+  const color = '#a020f0';
+  const type = 'pad';
+  const instrument = 'pad-the-bliss-sea';
+
+  txId = await nftContract.connect(owner).mintPrototype(collectionId, editionSize, name, price,
+                                                                     color, type, instrument, soundFiles, owner.address); 
+  console.log("Prototype Minted: ", name);    
+}
+
 const mintRhythmMarimbaMyMind = async (owner, nftContract, collectionId) => {
   let soundFiles = {
     urls: {
@@ -295,17 +354,20 @@ const main = async () => {
         let collectionId = 1;
         console.log("Got collectionId:", collectionId);
 
-        await mintRhythmMarimbaMyMind(owner, nftContract, collectionId);
-        await mintRhythmMellowYellow(owner, nftContract, collectionId);
         await mintDroneInside(owner, nftContract, collectionId);
+
         await mintPadDeepCanyonDreams(owner, nftContract, collectionId);
         await mintPadLostInTheWind(owner, nftContract, collectionId);
         await mintPadTheOnlyWayOutIsIn(owner, nftContract, collectionId);
+        await mintPadFollowTheBlueMan(owner, nftContract, collectionId);
+        await mintPadTheBlissSea(owner, nftContract, collectionId);
+
+        await mintRhythmMarimbaMyMind(owner, nftContract, collectionId);
+        await mintRhythmMellowYellow(owner, nftContract, collectionId);
         await mintRhythmIsThatWhereIWasnt(owner, nftContract, collectionId);
         await mintRhythmQuartzCavern(owner, nftContract, collectionId);
         await mintRhythmSlowDownInside(owner, nftContract, collectionId);
 
-    
         // get all prototypes in my collection, 
         const prototypes = await nftContract.connect(owner).getPrototypesForCollectionId(collectionId);
         console.log("all prototypes=", prototypes); 
@@ -315,8 +377,6 @@ const main = async () => {
 
         // const myNFTs = await nftContract.connect(owner).getMyNFTS();
         // console.log("myNFTs=", myNFTs);
-
-
     } 
     catch (error) {
       console.log(error);

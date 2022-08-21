@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/utils/Base64.sol";
 import "hardhat/console.sol";
 
 
-// contract deployed to 0x2C0fDa00F19D0c238AAB2f90107b05B5d6653eA1
+// contract deployed to 0xb3dD36a23b10D1F1135B978B570aB67e97972D07
 contract InterdimensionalOne is ERC721URIStorage {
     address payable owner;
 
@@ -152,25 +152,24 @@ contract InterdimensionalOne is ERC721URIStorage {
         require(msg.value == price, "insufficient mint fee");
 
         _tokenIds.increment();
-        uint256 newNFTId = _tokenIds.current();
-        Prototype memory curPrototype = prototypeIdToPrototype[prototypeId];
+        uint256 newTokenId = _tokenIds.current();
+        Prototype storage curPrototype = prototypeIdToPrototype[prototypeId];
         curPrototype.currentlyMinted++;
         uint256 editionId = curPrototype.currentlyMinted;
 
         require(editionId <= curPrototype.editionSize, "edition sold out");
 
-        NFT memory newNFT = NFT(newNFTId,
-                        editionId,
-                        prototypeId,
-                        payable(msg.sender),
-                        payable(msg.sender),
-                        svgData); // default is to not list for sale
+        NFT memory newNFT = NFT(newTokenId,
+                                editionId,
+                                prototypeId,
+                                payable(msg.sender),
+                                payable(msg.sender),
+                                svgData); // default is to not list for sale
         ownerToNFTs[msg.sender].push(newNFT);
-        tokenIdToNFT[newNFTId] = newNFT;
-        // increase currentlyMinted count
-        curPrototype.currentlyMinted++;
-        _safeMint(msg.sender, newNFTId);
-        _setTokenURI(newNFTId, getTokenURI(newNFTId));
+        tokenIdToNFT[newTokenId] = newNFT;
+
+        _safeMint(msg.sender, newTokenId);
+        _setTokenURI(newTokenId, getTokenURI(newTokenId));
         //transfer mint fee to prototype owner
         payable(creator).transfer(msg.value);    
     }
