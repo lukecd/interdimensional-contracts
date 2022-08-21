@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/utils/Base64.sol";
 import "hardhat/console.sol";
 
 
-// contract deployed to 0xb3dD36a23b10D1F1135B978B570aB67e97972D07
+// contract deployed to 0x40e96d6C05105F7c4cea0C2888a3Bb3FE28348B3
 contract InterdimensionalOne is ERC721URIStorage {
     address payable owner;
 
@@ -156,6 +156,13 @@ contract InterdimensionalOne is ERC721URIStorage {
         Prototype storage curPrototype = prototypeIdToPrototype[prototypeId];
         curPrototype.currentlyMinted++;
         uint256 editionId = curPrototype.currentlyMinted;
+
+        Prototype[] storage prototypes = collectionIdToPrototypes[curPrototype.collectionId];
+        for(uint i=0; i<prototypes.length; i++) {
+            if(prototypes[i].prototypeId == prototypeId) {
+                prototypes[i].currentlyMinted++;
+            }
+        }
 
         require(editionId <= curPrototype.editionSize, "edition sold out");
 
